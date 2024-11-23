@@ -1,27 +1,31 @@
 package config
 
-import "github.com/ShatteredRealms/go-common-service/pkg/config"
+import (
+	"context"
+
+	cconfig "github.com/ShatteredRealms/go-common-service/pkg/config"
+)
 
 var (
 	Version = "v1.0.0"
 )
 
 type ConnectionConfig struct {
-	config.BaseConfig `yaml:",inline" mapstructure:",squash"`
-	Postgres          config.DBPoolConfig `yaml:"postgres"`
+	cconfig.BaseConfig `yaml:",inline" connectionstructure:",squash"`
+	Postgres           cconfig.DBPoolConfig `yaml:"postgres"`
 }
 
-func NewConnectionConfig() *ConnectionConfig {
-	return &ConnectionConfig{
-		BaseConfig: config.BaseConfig{
-			Server: config.ServerAddress{
+func NewConnectionConfig(ctx context.Context) (*ConnectionConfig, error) {
+	config := &ConnectionConfig{
+		BaseConfig: cconfig.BaseConfig{
+			Server: cconfig.ServerAddress{
 				Host: "localhost",
-				Port: "8082",
+				Port: "8085",
 			},
-			Keycloak: config.KeycloakConfig{
+			Keycloak: cconfig.KeycloakConfig{
 				BaseURL:      "localhost:8080",
 				Realm:        "default",
-				Id:           "274ed62e-127b-44d4-9832-c982f45e91c6",
+				Id:           "7b575e9b-c687-4cdc-b210-67c59b5f380f",
 				ClientId:     "sro-connection-service",
 				ClientSecret: "**********",
 			},
@@ -29,13 +33,16 @@ func NewConnectionConfig() *ConnectionConfig {
 			LogLevel:            0,
 			OpenTelemtryAddress: "localhost:4317",
 		},
-		Postgres: config.DBPoolConfig{
-			Master: config.DBConfig{
-				ServerAddress: config.ServerAddress{},
+		Postgres: cconfig.DBPoolConfig{
+			Master: cconfig.DBConfig{
+				ServerAddress: cconfig.ServerAddress{},
 				Name:          "connection-service",
 				Username:      "postgres",
 				Password:      "password",
 			},
 		},
 	}
+
+	err := cconfig.BindConfigEnvs(ctx, "sro-connection", config)
+	return config, err
 }
