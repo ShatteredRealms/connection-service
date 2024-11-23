@@ -14,8 +14,8 @@ service ConnectionService {
     };
   }
 
-  rpc VerifyConnect(VerifyConnectRequest)
-      returns (sro.character.CharacterDetails) {
+  rpc VerifyConnectRequest(VerifyConnectRequestMessage)
+      returns (sro.CharacterTarget) {
     option (google.api.http) = {
       post : "/v1/connect/verify"
       body : "*"
@@ -36,7 +36,7 @@ message ConnectGameServerResponse {
   string connection_id = 3;
 }
 
-message VerifyConnectRequest {
+message VerifyConnectRequestMessage {
   string connection_id = 1;
   string server_name = 2;
 }
